@@ -41,9 +41,9 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 #  CONFIGURATION
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 $script:Config = @{
     BaseDir      = "$env:USERPROFILE\.jvmw"
     JdksDir      = "$env:USERPROFILE\.jvmw\jdks"
@@ -59,13 +59,13 @@ $script:Config = @{
     Vendor       = "eclipse"
 }
 
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 #  UTILS: Output
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 function Write-Info    { if (-not $Silent) { Write-Host "  $args" -ForegroundColor Cyan } }
-function Write-Ok      { if (-not $Silent) { Write-Host "  ✓ $args" -ForegroundColor Green } }
-function Write-Warn    { if (-not $Silent) { Write-Host "  ⚠ $args" -ForegroundColor Yellow } }
-function Write-Err     { Write-Host "  ✗ $args" -ForegroundColor Red }
+function Write-Ok      { if (-not $Silent) { Write-Host "  [OK] $args" -ForegroundColor Green } }
+function Write-Warn    { if (-not $Silent) { Write-Host "  [WARN] $args" -ForegroundColor Yellow } }
+function Write-Err     { Write-Host "  [ERR] $args" -ForegroundColor Red }
 function Write-Header  { if (-not $Silent) { Write-Host "`n  $args" -ForegroundColor White } }
 
 function Out-Result {
@@ -89,9 +89,9 @@ function Write-Log {
     Add-Content -Path $script:Config.LogFile -Value $line -ErrorAction SilentlyContinue
 }
 
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 #  INIT
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 function Initialize-Dirs {
     foreach ($dir in @($script:Config.BaseDir, $script:Config.JdksDir)) {
         if (-not (Test-Path $dir)) {
@@ -116,9 +116,9 @@ function Save-JvmwConfig {
     $Cfg | ConvertTo-Json -Depth 5 | Set-Content $script:Config.ConfigFile
 }
 
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 #  COMMAND: help
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 function Invoke-Help {
     if ($Json) {
         Out-Result @{
@@ -147,9 +147,9 @@ function Invoke-Help {
 
     Write-Host @"
 
-  ┌─────────────────────────────────────────────────┐
-  │   jvmw $($script:Config.Version)  -  JDK Version Manager for Windows    │
-  └─────────────────────────────────────────────────┘
+  +-------------------------------------------------+
+  |   jvmw $($script:Config.Version)  -  JDK Version Manager for Windows    |
+  +-------------------------------------------------+
 
   COMMANDS
     list                  List installed JDKs
@@ -180,9 +180,9 @@ function Invoke-Help {
 "@ -ForegroundColor Gray
 }
 
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 #  COMMAND: list
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 function Invoke-List {
     $cfg = Get-JvmwConfig
     $jdksDir = $script:Config.JdksDir
@@ -226,7 +226,7 @@ function Invoke-List {
     Write-Header "Installed JDKs:"
     Write-Host ""
     foreach ($jdk in $installed) {
-        $marker = if ($jdk.active) { "→" } else { " " }
+        $marker = if ($jdk.active) { "->" } else { " " }
         $color  = if ($jdk.active) { "Green" } else { "Gray" }
         $ver    = if ($jdk.version) { "  ($($jdk.version))" } else { "" }
         Write-Host "  $marker  $($jdk.name)$ver" -ForegroundColor $color
@@ -234,9 +234,9 @@ function Invoke-List {
     Write-Host ""
 }
 
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 #  COMMAND: available
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 function Invoke-Available {
     Write-Info "Fetching available JDK versions from Adoptium..."
 
@@ -276,9 +276,9 @@ function Invoke-Available {
     Write-Info "Install with: jvmw install <major>"
 }
 
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 #  COMMAND: install
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 function Invoke-Install {
     param([string]$Ver)
     if (-not $Ver) {
@@ -402,9 +402,9 @@ function Invoke-Install {
     Write-Info "Activate with: jvmw use $major"
 }
 
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 #  COMMAND: use
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 function Invoke-Use {
     param([string]$Ver)
     if (-not $Ver) {
@@ -483,9 +483,9 @@ function Invoke-Use {
     } catch { }
 }
 
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 #  COMMAND: current
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 function Invoke-Current {
     $cfg = Get-JvmwConfig
     $current = $cfg.current
@@ -522,7 +522,7 @@ function Invoke-Current {
     }
 
     Write-Header "Active JDK:"
-    Write-Host "  → $current" -ForegroundColor Green
+    Write-Host "  -> $current" -ForegroundColor Green
     Write-Host "    JAVA_HOME : $jdkPath" -ForegroundColor Gray
     if ($javaVersion) {
         Write-Host "    Version   : $javaVersion" -ForegroundColor Gray
@@ -530,9 +530,9 @@ function Invoke-Current {
     Write-Host ""
 }
 
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 #  COMMAND: path
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 function Invoke-Path {
     param([string]$Ver)
     if (-not $Ver) {
@@ -554,9 +554,9 @@ function Invoke-Path {
     Write-Output $jdkPath
 }
 
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 #  COMMAND: env
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 function Invoke-Env {
     param([string]$Ver)
     if (-not $Ver) {
@@ -590,9 +590,9 @@ function Invoke-Env {
     foreach ($c in $cmds) { Write-Output $c }
 }
 
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 #  COMMAND: which
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 function Invoke-Which {
     $java = Get-Command java -ErrorAction SilentlyContinue
     if (-not $java) {
@@ -616,9 +616,9 @@ function Invoke-Which {
     Write-Output $javaPath
 }
 
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 #  COMMAND: remove
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 function Invoke-Remove {
     param([string]$Ver)
     if (-not $Ver) {
@@ -661,9 +661,9 @@ function Invoke-Remove {
     Write-Ok "JDK $major removed"
 }
 
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 #  COMMAND: doctor
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 function Invoke-Doctor {
     $checks = @()
 
@@ -727,7 +727,7 @@ function Invoke-Doctor {
     Write-Header "jvmw doctor"
     Write-Host ""
     foreach ($c in $checks) {
-        $icon  = if ($c.ok) { "✓" } else { "✗" }
+        $icon  = if ($c.ok) { "[OK]" } else { "[ERR]" }
         $color = if ($c.ok) { "Green" } else { "Red" }
         Write-Host "  $icon  $($c.check)" -ForegroundColor $color
         Write-Host "       $($c.detail)" -ForegroundColor Gray
@@ -736,9 +736,9 @@ function Invoke-Doctor {
     if ($allOk) { Write-Ok "All checks passed" } else { Write-Warn "Some issues detected" }
 }
 
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 #  ENTRYPOINT
-# ─────────────────────────────────────────────
+# ---------------------------------------------
 Initialize-Dirs
 
 switch ($Command.ToLower()) {

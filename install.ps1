@@ -33,12 +33,12 @@ if ($Uninstall) {
     $p = [System.Environment]::GetEnvironmentVariable("PATH", $scope)
     $p = ($p -split ';' | Where-Object { $_ -ne $installDir }) -join ';'
     [System.Environment]::SetEnvironmentVariable("PATH", $p, $scope)
-    Write-Host "  ✓ jvmw uninstalled" -ForegroundColor Green
+    Write-Host "  [OK] jvmw uninstalled" -ForegroundColor Green
     exit 0
 }
 
 if (-not (Test-Path $scriptSrc)) {
-    Write-Host "  ✗ jvmw.ps1 not found at: $scriptSrc" -ForegroundColor Red
+    Write-Host "  [ERR] jvmw.ps1 not found at: $scriptSrc" -ForegroundColor Red
     Write-Host "  Place install.ps1 next to jvmw.ps1 and re-run."
     exit 1
 }
@@ -52,13 +52,13 @@ $scope = if ($Global) { "Machine" } else { "User" }
 $currentPath = [System.Environment]::GetEnvironmentVariable("PATH", $scope)
 if ($currentPath -notmatch [regex]::Escape($installDir)) {
     [System.Environment]::SetEnvironmentVariable("PATH", "$installDir;$currentPath", $scope)
-    Write-Host "  ✓ Added to $scope PATH: $installDir" -ForegroundColor Green
+    Write-Host "  [OK] Added to $scope PATH: $installDir" -ForegroundColor Green
 } else {
-    Write-Host "  ✓ Already in PATH: $installDir" -ForegroundColor Cyan
+    Write-Host "  [OK] Already in PATH: $installDir" -ForegroundColor Cyan
 }
 
 Write-Host ""
-Write-Host "  ✓ jvmw installed to: $installDir" -ForegroundColor Green
+Write-Host "  [OK] jvmw installed to: $installDir" -ForegroundColor Green
 Write-Host ""
 Write-Host "  Restart your terminal, then run:" -ForegroundColor Gray
 Write-Host "    jvmw help" -ForegroundColor White
